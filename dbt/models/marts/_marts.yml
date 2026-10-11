@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: >
+      One row per order. `net_revenue` counts merchandise amount for completed
+      orders only; cancelled and returned orders are kept with zero revenue.
+    columns:
+      - name: order_id
+        tests: [unique, not_null]
+      - name: order_amount
+        tests:
+          - not_null
+      - name: net_revenue
+        tests:
+          - not_null
+
+  - name: dim_customers
+    description: One row per customer with lifetime metrics from completed orders.
+    columns:
+      - name: customer_id
+        tests: [unique, not_null]
+
+  - name: mart_daily_channel_sales
+    description: Daily KPIs per sales channel (orders, revenue, margin, AOV).
+    tests:
+      - unique_combination:
+          arguments:
+            columns: [ordered_on, channel]
+
+  - name: mart_customer_rfm
+    description: RFM scores and segment for every customer with at least one completed order.
+    columns:
+      - name: customer_id
+        tests: [unique, not_null]
+      - name: segment
+        tests:
+          - accepted_values:
+              arguments:
+                values: [champions, loyal, new_or_promising, at_risk, hibernating]

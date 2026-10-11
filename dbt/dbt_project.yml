@@ -1,0 +1,38 @@
+name: ec_analytics
+version: "1.0.0"
+config-version: 2
+profile: ec_analytics
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+seeds:
+  ec_analytics:
+    +schema: raw
+    raw_orders:
+      +column_types:
+        order_id: varchar
+        customer_id: varchar
+        channel: varchar
+        ordered_at: varchar
+        status: varchar
+        shipping_fee: integer
+    raw_customers:
+      +column_types:
+        signed_up_on: varchar
+
+models:
+  ec_analytics:
+    staging:
+      +schema: staging
+      +materialized: view
+    intermediate:
+      +schema: intermediate
+      +materialized: view
+    marts:
+      +schema: marts
+      +materialized: table

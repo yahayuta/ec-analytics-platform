@@ -1,0 +1,18 @@
+# Two targets share the same models:
+#   ci   -> DuckDB (local file, no cloud account needed; used by GitHub Actions)
+#   prod -> BigQuery (datasets created by ../terraform)
+ec_analytics:
+  target: "{{ env_var('DBT_TARGET', 'ci') }}"
+  outputs:
+    ci:
+      type: duckdb
+      path: "{{ env_var('DUCKDB_PATH', 'ec_analytics.duckdb') }}"
+      threads: 4
+    prod:
+      type: bigquery
+      method: oauth
+      project: "{{ env_var('GCP_PROJECT_ID', 'your-gcp-project') }}"
+      dataset: ec_analytics
+      location: "{{ env_var('BQ_LOCATION', 'asia-northeast1') }}"
+      threads: 8
+      job_execution_timeout_seconds: 300
